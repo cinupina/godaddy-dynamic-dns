@@ -1,0 +1,24 @@
+{
+  "name": "godaddy-dynamic-dns",
+  "version": "1.0.0",
+  "description": "Personal dynamic DNS for domains hosted at GoDaddy",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cinupina/godaddy-dynamic-dns.git"
+  },
+  "author": "Indradjit Harbani",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cinupina/godaddy-dynamic-dns/issues"
+  },
+  "homepage": "https://github.com/cinupina/godaddy-dynamic-dns#readme",
+  "dependencies": {
+    "moment": "^2.17.1",
+    "request": "^2.79.0"
+  }
+}

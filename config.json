@@ -1,0 +1,4 @@
+{
+  "ipify": "https://api.ipify.org/?format=json",
+  "godaddy": "https://api.godaddy.com"
+}
