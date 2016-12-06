@@ -10,16 +10,19 @@ The update only occurs if the public IP address differs from the current DNS A r
 
 ## Installation and Execution
 The script has been tested using Node 6.x, though any version that supports ES6 should work. It needs to be run on a machine that is behind the public IP address you want to update your DNS record to.
+
 1. Install Node.js
 2. Clone this repository to a local directory.
 3. Request _Production_ GoDaddy API Key and Secret for your account from [GoDaddy Developer Portal](https://developer.godaddy.com/keys/)
-4. Create `auth.json` file in the root local repository directory, containing the following: 
+4. Create `auth.json` file in the root local repository directory, containing the following:
+
     ```{
       "key": "[your GoDaddy API Key]",
       "secret": "[your GoDaddy API Secret]",
       "domain": "[your domain name, ex: foo.com]",
       "host": "[your host, ex: www]"
     }```
+    
 5. Run `npm install` in the root local repository.
 6. Execute this script via `npm start`, or `node ./src/index.js`.
 7. Repeat the execution periodically, using cron job or other task schedulers.
