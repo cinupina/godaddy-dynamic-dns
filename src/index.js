@@ -1,3 +1,4 @@
+const async = require('async');
 const request = require('request');
 const querystring = require('querystring');
 const moment = require('moment');
@@ -27,9 +28,13 @@ function getPublicIp(callback) {
   });
 }
 
-function getDnsRecords(domain, host, callback) {
-  const path = `/v1/domains/${domain}/records/A/${host}`;
-  requestApi('GET', path, null, true, callback);
+function getDnsRecords(domain, hosts, callback) {
+  async.map(hosts, function (host, callback) {
+    const path = `/v1/domains/${domain}/records/A/${host}`;
+    requestApi('GET', path, null, true, (err, response) => callback(null, {host, response}));
+  }, function(err, results){
+    callback(null, results);
+  });
 }
 
 function updateDnsRecords(domain, host, data, callback) {
@@ -38,53 +43,60 @@ function updateDnsRecords(domain, host, data, callback) {
 }
 
 function check(domain, host) {
-  let hostname = `${host}.${domain}`;
 
-  console.log(`${now()} Checking ${hostname}...`);
   getPublicIp((err1, ip) => {
     if (err1) {
       console.log(err1);
       return;
     }
 
-    getDnsRecords(domain, host, (err2, records1) => {
+    getDnsRecords(domain, host, (err2, records) => {
+
       if (err2) {
         console.log(err2);
         return;
       }
 
-      if (!records1 || !records1.length) {
+      if (!records || !records.length) {
         return void console.log(`There are no DNS records found for ${hostname}`);
       }
 
-      const record = records1[0];
+      records.forEach( function(record) {
 
-      if (record.type !== 'A') {
-        return void console.log(`Unexpected Type record ${record.type} returned for ${hostname}`);
-      }
+        let hostname = `${record.host}.${domain}`;
 
-      if (record.name !== host) {
-        return void console.log(`Unexpected Name record ${record.name} returned for ${hostname}`);
-      }
-      
-      if (record.data === ip) {
-        return void console.log(`${now()} The current public IP address matches GoDaddy DNS record: ${ip}, no update needed.`);
-      }
+        console.log(`${now()} Checking ${hostname}...`);
 
-      console.log(`${now()} The current public IP address ${ip} does not match GoDaddy DNS record: ${record.data}.`);
-      const data = [{ data: ip, ttl: 86400 }];
-      updateDnsRecords(domain, host, data, (err3, res) => {
-        if (err3) {
-          return void console.log(err3);
+        const response = record.response[0];
+        const host = record.host;
+
+        if (response.type !== 'A') {
+          return void console.log(`Unexpected Type record ${response.type} returned for ${hostname}`);
         }
 
-        getDnsRecords(domain, host, (err4, records2) => {
-          if (err4) {
-            return void console.log(err4);
+        if (!host.includes(response.name)) {
+          return void console.log(`Unexpected Name record ${response.name} returned for ${hostname}`);
+        }
+
+        if (response.data === ip) {
+          return void console.log(`${now()} The current public IP address matches GoDaddy DNS record: ${ip}, no update needed.`);
+        }
+
+        console.log(`${now()} The current public IP address ${ip} does not match GoDaddy DNS record: ${response.data}.`);
+        const data = [{ data: ip, ttl: 86400 }];
+        updateDnsRecords(domain, host, data, (err3, res) => {
+          if (err3) {
+            return void console.log(err3);
           }
-          console.log(`${now()} Successfully updated DNS records to: ${util.inspect(records2)}`);
+
+          getDnsRecords(domain, host, (err4, records2) => {
+            if (err4) {
+              return void console.log(err4);
+            }
+            console.log(`${now()} Successfully updated DNS records to: ${util.inspect(records2)}`);
+          })
         })
-      })
+      });
     });
   });
 }
