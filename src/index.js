@@ -31,7 +31,12 @@ function getPublicIp(callback) {
 function getDnsRecords(domain, hosts, callback) {
   async.map(hosts, function (host, callback) {
     const path = `/v1/domains/${domain}/records/A/${host}`;
-    requestApi('GET', path, null, true, (err, response) => callback(null, {host, response}));
+    requestApi('GET', path, null, true, (err, response) => {
+      if (err){
+        return;
+      }
+      callback(null, {host, response})
+    })
   }, function(err, results){
     callback(null, results);
   });
@@ -64,11 +69,10 @@ function check(domain, host) {
       records.forEach( function(record) {
 
         let hostname = `${record.host}.${domain}`;
-
         console.log(`${now()} Checking ${hostname}...`);
 
-        const response = record.response[0];
         const host = record.host;
+        const response = record.response[0];
 
         if (response.type !== 'A') {
           return void console.log(`Unexpected Type record ${response.type} returned for ${hostname}`);
