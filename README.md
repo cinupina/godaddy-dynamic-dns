@@ -20,7 +20,7 @@ The script has been tested using Node 6.x, though any version that supports ES6 
       "key": "[your GoDaddy API Key]",
       "secret": "[your GoDaddy API Secret]",
       "domain": "[your domain name, ex: foo.com]",
-      "host": "[your host, ex: www]"
+      "host": ["your host(s)",  ex: ["www"] or ["www", "api"]] 
     }```
     
 5. Run `npm install` in the root local repository.

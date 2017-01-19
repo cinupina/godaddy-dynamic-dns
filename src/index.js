@@ -33,7 +33,7 @@ function getDnsRecords(domain, hosts, callback) {
     const path = `/v1/domains/${domain}/records/A/${host}`;
     requestApi('GET', path, null, true, (err, response) => {
       if (err){
-        return;
+        return callback(err);
       }
       callback(null, {host, response})
     })
