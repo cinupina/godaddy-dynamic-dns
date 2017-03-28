@@ -1,0 +1,6 @@
+{
+      "key": "[your GoDaddy API Key]",
+      "secret": "[your GoDaddy API Secret]",
+      "domain": "[your domain name, ex: foo.com]",
+      "host": ["host1", "host2"]
+}
