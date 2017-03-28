@@ -57,7 +57,7 @@ The script has been tested using Node 6.x, though any version that supports ES6 
 6. Start Docker container:
 
     ```
-    docker run -d --restart=always -e INTERVAL=3600 -name=godaddy-dynamic-dns godaddy-dynamic-dns
+    docker run -d --restart=always -e INTERVAL=3600 --name=godaddy-dynamic-dns godaddy-dynamic-dns
     ```
 
 The default check interval is 1 hour (3600 seconds).  Modify INTERVAL environment variable if you desire a different interval time.
