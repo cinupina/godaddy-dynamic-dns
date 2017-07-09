@@ -63,6 +63,8 @@ module.exports = (function(){
 				ipOverride = undefined;
 			}
 			this.lastCheck = moment();
+			
+			if(this.testing) console.log(`${now()} Tesing Mode Enabled`);
 			getPublicIp((err1, ip) => {
 				if(ipOverride){
 					if(err1) console.log(`${now()} Target IP: ${ipOverride}`);

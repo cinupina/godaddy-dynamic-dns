@@ -29,7 +29,7 @@ The script has been tested using Node 6.x, though any version that supports ES6 
 ```
     
 5. Run `npm install` in the root local repository.
-6. Execute this script via `npm start`, or `node ./index.js --run`.
+6. Execute this script via `npm start`, or `node ./index.js`. Test using `npm test`.
 7. Repeat the execution periodically, using cron job or other task schedulers.
 
 [See **CLI Usage**](#user-content-cli-usage)
@@ -43,7 +43,54 @@ Install as a module via `npm install git+https://github.com/jgjake2/godaddy-dyna
 1. Feedback, bug report, PR are welcome!
 2. The script is provided as-is, I hold absolutely no responsibility for any problem with your host records using this script :)))
 
+## Docker Installation and Execution
+
+1. Install Docker
+2. Clone this repository to a local directory.
+3. Request _Production_ GoDaddy API Key and Secret for your account from [GoDaddy Developer Portal](https://developer.godaddy.com/keys/)
+4. Create `auth.json` file in the root local repository directory, containing the following (consult auth.json.sample):
+
+    ```
+    {
+      "key": "[your GoDaddy API Key]",
+      "secret": "[your GoDaddy API Secret]",
+      "domain": "[your domain name, ex: foo.com]",
+      "host": ["your host(s)",  ex: ["www"] or ["www", "api"]]
+    }
+    ```
+5. Run Docker build:
+
+    ```
+    docker build . -t=godaddy-dynamic-dns
+    ```
+
+6. Start Docker container:
+
+    ```
+    docker run -d --restart=always -e INTERVAL=3600 --name=godaddy-dynamic-dns godaddy-dynamic-dns
+    ```
+
+The default check interval is 1 hour (3600 seconds).  Modify INTERVAL environment variable if you desire a different interval time.
+
+7. Stop Docker container:
+
+   ```
+   docker stop godaddy-dynamic-dns
+   ```
+8. Restart Docker container, ie: after a host reboot:
+
+   ```
+   docker start godaddy-dynamic-dns
+   ```
+
+9. Remove Docker container:
+
+   ```
+   docker rm -f godaddy-dynamic-dns
+   ```
+
 ## Programmatic Usage
+If you have a lot of domains, it may be easier to write a script that updates them all at once.
 
 ```javascript
 const GoDaddyDynamicDNS = require('godaddy-dynamic-dns');
@@ -54,7 +101,7 @@ const settings = {
   "host": ["your host(s)",  ex: ["www"] or ["www", "api"]] ,
   "ip": "1.2.3.4" // Optional: override dynamic detection of public IP address
 };
-const enableTestingMode = false; // Does not commit DNS changes
+const enableTestingMode = false; // Does not commit DNS changes when true
 var myGoDaddyDynamicDNS = new GoDaddyDynamicDNS(settings, enableTestingMode);
 myGoDaddyDynamicDNS.run((success) => {
     console.log('DNS Update Success: ', success);
@@ -74,12 +121,18 @@ myGoDaddyDynamicDNS.run("56.78.9.10");
 	
 ## CLI Usage:
 ```
-# Run and auto detect auth.json
-node index.js --run
+# Run and auto detect location of auth.json
+node index.js
 
-# Provide settings file
-node index.js --run "/path/to/auth.json"
+# Specify auth file path
+node index.js "/path/to/auth.json"
 
 # Enable testing mode
-node index.js --run --test
+node index.js --test
+
+# Using NPM
+npm start
+
+# Test using NPM
+npm test
 ```

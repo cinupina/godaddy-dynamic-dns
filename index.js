@@ -6,7 +6,7 @@ module.exports = GoDaddyDynamicDNS;
 (function(){
 	const path = require('path');
 	const fs = require('fs');
-	if(process.argv && process.argv.length > 2){
+	if(require.main === module || (process.argv && process.argv.length > 2)){
 		
 		// https://github.com/scottcorgan/file-exists
 		function fullPath (filepath, options = {}) {const root = options.root;return (root) ? path.join(root, filepath) : filepath;}
@@ -18,25 +18,25 @@ module.exports = GoDaddyDynamicDNS;
 			}
 		}
 		
-		let run = false,
+		let run = require.main === module,
 			filePath = '',
 			testing = false;
-			
+		
+		if(process.argv.length > 2 && /\.json$/.test(process.argv[2])){
+			filePath = process.argv[2];
+			run = true;
+		}
+		
 		process.argv.forEach((val, index) => {
-			if(/^(?:-r|--run)/i.test(val)) {
-				run = true;
-				if(process.argv.length > index && /\.json$/.test(process.argv[index + 1])){
-					filePath = process.argv[index + 1];
-				}
-			}
 			if(/^(?:-t|--test)$/i.test(val)) testing = true; // Does not 
 		});
 		
 		if(run){
 			let settings = null;
-			if(filePath && fileExistsSync(filePath)){
-				settings = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-				console.log('GoDaddy config loaded: "' + path.join(process.cwd(), filePath) + '"');
+			let completePath = filePath && (path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath));
+			if(completePath && fileExistsSync(completePath)){
+				settings = JSON.parse(fs.readFileSync(completePath, 'utf8'));
+				console.log('GoDaddy config loaded: "' + completePath + '"');
 			} else {
 				try {
 					settings = require('../auth.json');

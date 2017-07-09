@@ -1,11 +1,11 @@
 {
   "name": "godaddy-dynamic-dns",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Personal dynamic DNS for domains hosted at GoDaddy",
   "main": "index.js",
   "scripts": {
-    "start": "node ./index.js -r",
-    "test": "node ./index.js -r -t"
+    "start": "node ./index.js",
+    "test": "node ./index.js -t"
   },
   "repository": {
     "type": "git",
