@@ -38,3 +38,6 @@ jspm_packages
 
 # User configuration
 auth.json
+
+# NPM package lock file
+package-lock.json
